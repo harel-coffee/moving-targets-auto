@@ -9,7 +9,7 @@ state-of-the-art constraint solver.
 The method is general-purpose and can address any learner type and constraints, provided these latter lead to a 
 solvable constrained optimization problem (see the paper for details).
 
-## Dataset
+## Datasets
 
 We provide the dataset used in the paper for the benchmarking with other algorithms, in the folder 
 `resources/{dataset_name}`
