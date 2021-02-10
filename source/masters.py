@@ -21,6 +21,13 @@ class BalancedCountsMaster:
 
     def adjust_targets(self, y, p, alpha, beta, use_prob=False):
         assert(alpha == 0 or p is not None)
+
+        if use_prob:
+            prob = p.copy()
+            # Output clipping to avoid infinities.
+            prob = np.clip(prob, a_min=.01, a_max=.99)
+            p = np.argmax(prob, axis=1)
+
         print("Master problem")
         # Obtain the number of samples
         nsamples = len(y)
@@ -51,8 +58,14 @@ class BalancedCountsMaster:
             xpr = mod.sum(vy[i, c] for c in range(nclasses))
             mod.add_constraint(xpr == 1)
         # Define the loss w.r.t. the true labels
-        p_loss = (1 / nsamples) * mod.sum([(1-vy[i, p[i]]) for i in range(nsamples)])
         y_loss = (1 / nsamples) * mod.sum([(1-vy[i, y[i]]) for i in range(nsamples)])
+        if use_prob:
+            def cross_entropy(i):
+                return -mod.sum([vy[i, j] * np.log(prob[i, j]) for j in range(nclasses)])
+            p_loss = (1 / nsamples) * mod.sum([cross_entropy(i) for i in range(nsamples)])
+        else:
+            p_loss = (1 / nsamples) * mod.sum([(1 - vy[i, p[i]]) for i in range(nsamples)])
+
         if feasible and beta >= 0:
             # Search in a Ball
             # 1/alpha determines the allowed number of flips from the original solution.

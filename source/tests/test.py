@@ -23,8 +23,8 @@ def test():
                           initial_step=initial_step,
                           use_prob=use_prob)
 
-    instance.validate()
-    instance.collect_results()
+    # instance.validate()
+    # instance.collect_results()
 
     instance.test()
     instance.collect_results()

@@ -388,7 +388,7 @@ class Validation:
         self.logger = CustomLogger(self.learner, self.master,
                                    x_train, y_train, nfold=99, x_test=x_test, y_test=y_test)
         mp = macs.MACS(self.learner, self.master, self.logger)
-        mp.fit(x_train, y_train, self.iterations, self.alpha, self.beta, self.initial_step)
+        mp.fit(x_train, y_train, self.iterations, self.alpha, self.beta, self.initial_step, self.use_prob)
         self.results['Test'] = self.logger.results
 
     def collect_results(self):

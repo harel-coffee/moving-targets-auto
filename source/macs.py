@@ -100,7 +100,7 @@ class MACS(object):
         elif initial_step == 'projection':
             self.logger.on_pretraining_start()
             # Project targets on the feasible region.
-            adj_y = self.master.adjust_targets(y, y.reshape(-1), 1e6, beta, use_prob)
+            adj_y = self.master.adjust_targets(y, y.reshape(-1), 1e6, beta, False)
             self.learner.fit(x, adj_y)
             self.logger.on_pretraining_end()
         else:
