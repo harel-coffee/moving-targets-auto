@@ -1,12 +1,12 @@
-import wandb
 import time
+import wandb
 
-from source import macs
+from source.loggers.logger import Logger
 
-PROJECT = 'test'
+PROJECT = 'movingtarg'
 ENTITY = 'giuluck'
 
-class WandBLogger(macs.Logger):
+class WandBLogger(Logger):
     """docstring for WandBLogger"""
 
     def __init__(self, learner, master, x, y, x_test=None, y_test=None, params=None, run='test'):
@@ -20,7 +20,6 @@ class WandBLogger(macs.Logger):
         self.x_test = x_test
         self.y_test = y_test
         self.logs = {} if params is None else params
-        self.results = {}
 
     def _append_info(self, x, y, p, name):
         for info in [self.master.cst_info(x, p), self.master.score_info(y, p)]:

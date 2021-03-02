@@ -7,7 +7,7 @@ import sklearn
 import time
 import logging
 
-from source import macs
+from source.loggers.logger import Logger
 
 """
 Logging verbosity:
@@ -18,7 +18,7 @@ Logging verbosity:
 _verbosity = 0
 
 
-class CustomLogger(macs.Logger):
+class CustomLogger(Logger):
     """docstring for CustomLogger"""
 
     def __init__(self, learner, master, x, y, x_test=None, y_test=None, nfold=0,

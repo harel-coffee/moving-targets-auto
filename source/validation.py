@@ -7,9 +7,9 @@ from source import macs, tfco_reg, tfco_cls, utils
 from source.masters import BalancedCountsMaster, FairnessRegMaster, FairnessClsMaster
 from source.models import regressors as rgs
 from source.models import classifiers as cls
-from source.logger import CustomLogger
-from source.wandb_logger import WandBLogger
-
+from source.loggers.wandb_logger import WandBLogger
+from source.loggers.custom_logger import CustomLogger
+from source.loggers.multi_logger import MultiLogger
 
 class Validation:
 
@@ -231,10 +231,12 @@ class Validation:
                 else:
                     raise ValueError(f'Unknown learner type "{self.ltype}"')
 
+            # Loggers
+            params = dict(fold=ii, alpha=self.alpha, beta=self.beta, init=self.initial_step, use_prob=self.use_prob)
+            wb_log = WandBLogger(self.learner, self.master, x_train, y_train, x_test, y_test, params, f'{self.dataset}')
+            cst_log = CustomLogger(self.learner, self.master, x_train, y_train, nfold=ii, x_test=x_test, y_test=y_test)
+            self.logger = MultiLogger([cst_log, wb_log])
             # Start the MACS process
-            # logger = CustomLogger(self.learner, self.master, x_train, y_train, nfold=ii, x_test=x_test, y_test=y_test)
-            p = dict(fold=ii, alpha=self.alpha, beta=self.beta, init=self.initial_step, use_prob=self.use_prob)
-            self.logger = WandBLogger(self.learner, self.master, x_train, y_train, x_test, y_test, p, f'{self.dataset}')
             mp = macs.MACS(self.learner, self.master, self.logger)
             mp.fit(x_train, y_train, self.iterations, self.alpha, self.beta, self.initial_step, use_prob=self.use_prob)
             self.results[f'fold_{ii}'] = self.logger.results
@@ -386,10 +388,12 @@ class Validation:
             else:
                 raise ValueError(f'Unknown learner type "{self.ltype}"')
 
+        # Loggers
+        params = dict(fold=99, alpha=self.alpha, beta=self.beta, init=self.initial_step, use_prob=self.use_prob)
+        wb_log = WandBLogger(self.learner, self.master, x_train, y_train, x_test, y_test, params, f'{self.dataset}')
+        cst_log = CustomLogger(self.learner, self.master, x_train, y_train, nfold=99, x_test=x_test, y_test=y_test)
+        self.logger = MultiLogger([cst_log, wb_log])
         # Start the MACS process
-        # logger = CustomLogger(self.learner, self.master, x_train, y_train, nfold=99, x_test=x_test, y_test=y_test)
-        p = dict(fold=ii, alpha=self.alpha, beta=self.beta, init=self.initial_step, use_prob=self.use_prob)
-        self.logger = WandBLogger(self.learner, self.master, x_train, y_train, x_test, y_test, p, f'{self.dataset}')
         mp = macs.MACS(self.learner, self.master, self.logger)
         mp.fit(x_train, y_train, self.iterations, self.alpha, self.beta, self.initial_step, self.use_prob)
         self.results['Test'] = self.logger.results
