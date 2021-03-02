@@ -94,14 +94,20 @@ class MACS(object):
         if initial_step == 'pretraining':
             self.logger.on_pretraining_start()
             # Train with the original labels
+            self.logger.on_training_start()
             self.learner.fit(x, y)
+            self.logger.on_training_end()
             self.logger.on_pretraining_end()
 
         elif initial_step == 'projection':
             self.logger.on_pretraining_start()
             # Project targets on the feasible region.
+            self.logger.on_adjustment_start()
             adj_y = self.master.adjust_targets(y, y.reshape(-1), 1e6, beta, False)
+            self.logger.on_adjustment_end(y)
+            self.logger.on_training_start()
             self.learner.fit(x, adj_y)
+            self.logger.on_training_end()
             self.logger.on_pretraining_end()
         else:
             raise ValueError("The method doesn't accept the initial step " + initial_step)
@@ -123,11 +129,11 @@ class MACS(object):
             if adj_y is None:
                 print('ERROR: could not compute adjusted labels')
                 return
-            self.logger.on_adjustment_end(adj_y, it)
+            self.logger.on_adjustment_end(adj_y)
             # Train the learner with the new labels
             self.logger.on_training_start()
             self.learner.fit(x, adj_y)
-            self.logger.on_training_end(it)
+            self.logger.on_training_end()
             self.logger.on_iteration_end(it)
 
         # Print stuff

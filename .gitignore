@@ -9,3 +9,5 @@ results/*
 tensorflow_constrained_optimization/*
 Plots/*
 old_code/*
+venv/
+wandb/
